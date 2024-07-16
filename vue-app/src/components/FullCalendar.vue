@@ -10,11 +10,10 @@
         <ul class="list-disc pl-4 mb-4">
           <li v-for="event in currentEvents" :key="event.id" class="mb-2">
             <b>{{ formatDate(event.startStr) }}</b>
-            <i>{{ event.title }}</i>
+            <span>{{ event.title }}</span>
           </li>
         </ul>
-        <button class="w-full p-2 bg-red-500 text-white rounded"
-         @click="clearEvents">Clear All Events</button>
+        <button class="w-full p-2 bg-red-500 text-white rounded" @click="clearEvents">Clear All Events</button>
 
         <h2 class="font-bold text-lg mb-2">Bulk Add</h2>
         <div class="mb-2">
@@ -45,9 +44,9 @@
         :options="calendarOptions"
       >
         <template v-slot:eventContent="arg">
-          <div class="flex items-center">
+          <div class="flex items-center bg-green-500 text-white p-1 rounded">
             <b class="mr-2">{{ formatTime(arg.event.start) }}</b>
-            <i class="mr-2">Edit</i>
+            <span class="mr-2">{{ arg.event.title }}</span>
             <i class="close-button cursor-pointer" @click="arg.event.remove()">X</i>
           </div>
         </template>
@@ -73,27 +72,13 @@ const endDate = ref('')
 const time = ref('')
 const currentEvents = ref([])
 const weekDaysMap = [
-  { day: 'Sunday',
-    value: 0
-  },
-  { day: 'Monday',
-    value: 1
-  },
-  { day: 'Tuesday',
-    value: 2
-  },
-  { day: 'Wednesday',
-    value: 3
-  },
-  { day: 'Thursday',
-    value: 4
-  },
-  { day: 'Friday',
-    value: 5
-  },
-  { day: 'Saturday',
-    value: 6
-  }
+  { day: 'Sunday', value: 0 },
+  { day: 'Monday', value: 1 },
+  { day: 'Tuesday', value: 2 },
+  { day: 'Wednesday', value: 3 },
+  { day: 'Thursday', value: 4 },
+  { day: 'Friday', value: 5 },
+  { day: 'Saturday', value: 6 }
 ];
 const selectedWeekDays = ref([])
 
@@ -101,7 +86,7 @@ const calendarOptions = reactive({
   plugins: [
     dayGridPlugin,
     timeGridPlugin,
-    interactionPlugin // needed for dateClick
+    interactionPlugin
   ],
   headerToolbar: {
     left: 'prev,next today',
@@ -109,15 +94,15 @@ const calendarOptions = reactive({
     right: 'dayGridMonth,timeGridWeek,timeGridDay'
   },
   initialView: 'timeGridWeek',
-  initialEvents: INITIAL_EVENTS, // alternatively, use the `events` setting to fetch from a feed
+  initialEvents: INITIAL_EVENTS,
   editable: false,
   selectable: true,
   selectMirror: false,
   dayMaxEvents: true,
   weekends: true,
-  select: handleDateSelect,
-  eventClick: handleEventClick,
-  eventsSet: handleEvents,
+  select: (selectInfo) => handleDateSelect(selectInfo),
+  eventClick: (clickInfo) => handleEventClick(clickInfo),
+  eventsSet: (events) => handleEvents(events),
   allDaySlot: false,
   slotEventOverlap: false,
   eventMaxStack: 1,
@@ -131,23 +116,16 @@ const calendarOptions = reactive({
   },
   views: {
     timeGridWeek: {
-      dayHeaderFormat: (date) => {
-        return moment(date.date.marker).format('ddd D');
-      },
-    },
+      dayHeaderFormat: (date) => moment(date.date.marker).format('ddd D')
+    }
   }
-  /* you can update a remote database when these fire:
-  eventAdd:
-  eventChange:
-  eventRemove:
-  */
 })
 
-function handleDateSelect(selectInfo) {
+const handleDateSelect = (selectInfo) => {
   let title = "";
   let calendarApi = selectInfo.view.calendar
 
-  calendarApi.unselect() // clear date selection
+  calendarApi.unselect()
   calendarApi.addEvent({
     id: createEventId(),
     title,
@@ -157,31 +135,31 @@ function handleDateSelect(selectInfo) {
   })
 }
 
-function handleEventClick(clickInfo) {
+const handleEventClick = (clickInfo) => {
   showEdit.value = true;
 }
 
-function handleEvents(events) {
+const handleEvents = (events) => {
   currentEvents.value = events
 }
 
-function formatTime(date) {
+const formatTime = (date) => {
   return moment(date).format('HH:mm')
 }
 
-function formatDate(date) {
+const formatDate = (date) => {
   return moment(date).format('LLL');
 }
 
-function closeEdit() {
+const closeEdit = () => {
   showEdit.value = false;
 }
 
-function clearEvents() {
+const clearEvents = () => {
   fullCalendar.value.getApi().removeAllEvents();
 }
 
-function bulkEventCreate() {
+const bulkEventCreate = () => {
   const start = startDate.value;
   const end = endDate.value;
   const timeValue = time.value;
@@ -206,7 +184,6 @@ function bulkEventCreate() {
       }
       current.add(1, 'day');
     }
-    // clear the form
     startDate.value = '';
     endDate.value = '';
     time.value = '';
