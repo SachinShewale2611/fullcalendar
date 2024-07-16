@@ -127,7 +127,7 @@ const calendarOptions = reactive({
   dayMaxEvents: true,
   weekends: true,
   select: (selectInfo) => handleDateSelect(selectInfo),
-  // eventClick: (clickInfo) => handleEventClick(clickInfo),
+  eventClick: (clickInfo) => handleEventClick(clickInfo),
   eventsSet: (events) => handleEvents(events),
   allDaySlot: false,
   slotEventOverlap: false,
@@ -240,9 +240,10 @@ const goToMonthYear = () => {
 }
 
 const updateEvent = (updatedEvent) => {
+  console.log('updatedEvent', updatedEvent)
   const calendarApi = fullCalendar.value.getApi();
   const existingEvent = calendarApi.getEventById(updatedEvent.id);
-
+  console.log('existingEvent', existingEvent)
   if (existingEvent) {
     existingEvent.setProp('title', updatedEvent.title);
     existingEvent.setExtendedProp('description', updatedEvent.description);
