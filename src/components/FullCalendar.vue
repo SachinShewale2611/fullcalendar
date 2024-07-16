@@ -8,48 +8,53 @@
     ></EditEvent>
     <div class="demo-app-sidebar w-1/4 p-4 bg-gray-100">
       <div class="demo-app-sidebar-section mb-4">
-        <h2 class="font-bold text-lg mb-2">All Events ({{ currentEvents.length }})</h2>
-        <ul class="list-disc pl-4 mb-4">
-          <li v-for="event in currentEvents" :key="event.id" class="mb-2">
-            <b>{{ formatDate(event.startStr) }}</b>
-            <span>{{ event.title }}</span>
-          </li>
-        </ul>
-        <button class="w-full p-2 bg-red-500 text-white rounded" @click="clearEvents">Clear All Events</button>
-
-        <h2 class="font-bold text-lg mb-2">Bulk Add</h2>
-        <div class="mb-2">
-          <label for="start" class="block mb-1">Start Date</label>
-          <input type="date" id="start" v-model="startDate" name="start" class="w-full p-2 border rounded">
-        </div>
-        <div class="mb-2">
-          <label for="end" class="block mb-1">End Date</label>
-          <input type="date" id="end" v-model="endDate" name="end" class="w-full p-2 border rounded">
-        </div>
-        <div class="mb-2">
-          <label for="time" class="block mb-1">Time</label>
-          <input type="time" id="time" v-model="time" name="time" class="w-full p-2 border rounded">
-        </div>
-        <div class="grid grid-cols-2 gap-2 mb-4">
-          <div v-for="{ day, value } in weekDaysMap" :key="day" class="flex items-center space-x-2">
-            <input type="checkbox" :id="day" :value="value" v-model="selectedWeekDays" class="form-checkbox h-4 w-4 text-blue-600">
-            <label :for="day" class="block">{{ day }}</label>
+        <div class="border-2 rounded-md mt-4 p-2">
+          <h2 class="font-bold text-lg mb-2">Go to Month/Year</h2>
+          <div class="mb-2">
+            <label for="month" class="block mb-1">Month</label>
+            <select id="month" v-model="selectedMonth" class="w-full p-2 border rounded">
+              <option v-for="(month, index) in months" :key="index" :value="index">{{ month }}</option>
+            </select>
           </div>
+          <div class="mb-2">
+            <label for="year" class="block mb-1">Year</label>
+            <input type="number" id="year" v-model="selectedYear" class="w-full p-2 border rounded">
+          </div>
+          <button @click="goToMonthYear" class="w-full p-2 bg-blue-500 text-white rounded">Go</button>
         </div>
-        <button @click="bulkEventCreate" class="w-full p-2 bg-blue-500 text-white rounded">Add</button>
-
-        <h2 class="font-bold text-lg mb-2">Go to Month/Year</h2>
-        <div class="mb-2">
-          <label for="month" class="block mb-1">Month</label>
-          <select id="month" v-model="selectedMonth" class="w-full p-2 border rounded">
-            <option v-for="(month, index) in months" :key="index" :value="index">{{ month }}</option>
-          </select>
+        <div class="border-2 rounded-md mt-4 p-2">
+          <h2 class="font-bold text-lg mb-2">Bulk Add</h2>
+          <div class="mb-2">
+            <label for="start" class="block mb-1">Start Date</label>
+            <input type="date" id="start" v-model="startDate" name="start" class="w-full p-2 border rounded">
+          </div>
+          <div class="mb-2">
+            <label for="end" class="block mb-1">End Date</label>
+            <input type="date" id="end" v-model="endDate" name="end" class="w-full p-2 border rounded">
+          </div>
+          <div class="mb-2">
+            <label for="time" class="block mb-1">Time</label>
+            <input type="time" id="time" v-model="time" name="time" class="w-full p-2 border rounded">
+          </div>
+          <div class="grid grid-cols-2 gap-2 mb-4">
+            <div v-for="{ day, value } in weekDaysMap" :key="day" class="flex items-center space-x-2">
+              <input type="checkbox" :id="day" :value="value" v-model="selectedWeekDays" class="form-checkbox h-4 w-4 text-blue-600">
+              <label :for="day" class="block">{{ day }}</label>
+            </div>
+          </div>
+          <button @click="bulkEventCreate" class="w-full p-2 bg-blue-500 text-white rounded">Add</button>
         </div>
-        <div class="mb-2">
-          <label for="year" class="block mb-1">Year</label>
-          <input type="number" id="year" v-model="selectedYear" class="w-full p-2 border rounded">
+        
+        <div class="border-2 rounded-md mt-4 p-2">
+          <h2 class="font-bold text-lg mb-2">All Events ({{ currentEvents.length }})</h2>
+          <ul class="list-disc pl-4 mb-4">
+            <li v-for="event in currentEvents" :key="event.id" class="mb-2">
+              <b>{{ formatDate(event.startStr) }}</b>
+              <span>{{ event.title }}</span>
+            </li>
+          </ul>
+          <button class="w-full p-2 bg-red-500 text-white rounded" @click="clearEvents">Clear All Events</button>
         </div>
-        <button @click="goToMonthYear" class="w-full p-2 bg-blue-500 text-white rounded">Go</button>
       </div>
     </div>
     <div class="demo-app-main flex-1 p-4">
