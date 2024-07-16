@@ -1,9 +1,11 @@
 <template>
   <div class="demo-app flex">
-    <edit-event
+    <EditEvent
       v-if="showEdit"
       @close="closeEdit"
-    ></edit-event>
+      :event="selectedEvent"
+      @update="updateEvent"
+    ></EditEvent>
     <div class="demo-app-sidebar w-1/4 p-4 bg-gray-100">
       <div class="demo-app-sidebar-section mb-4">
         <h2 class="font-bold text-lg mb-2">All Events ({{ currentEvents.length }})</h2>
@@ -35,6 +37,19 @@
           </div>
         </div>
         <button @click="bulkEventCreate" class="w-full p-2 bg-blue-500 text-white rounded">Add</button>
+
+        <h2 class="font-bold text-lg mb-2">Go to Month/Year</h2>
+        <div class="mb-2">
+          <label for="month" class="block mb-1">Month</label>
+          <select id="month" v-model="selectedMonth" class="w-full p-2 border rounded">
+            <option v-for="(month, index) in months" :key="index" :value="index">{{ month }}</option>
+          </select>
+        </div>
+        <div class="mb-2">
+          <label for="year" class="block mb-1">Year</label>
+          <input type="number" id="year" v-model="selectedYear" class="w-full p-2 border rounded">
+        </div>
+        <button @click="goToMonthYear" class="w-full p-2 bg-blue-500 text-white rounded">Go</button>
       </div>
     </div>
     <div class="demo-app-main flex-1 p-4">
@@ -43,12 +58,11 @@
         class="demo-app-calendar"
         :options="calendarOptions"
       >
-        <template v-slot:eventContent="arg">
-          <div class="flex items-center bg-green-500 text-white p-1 rounded">
-            <b class="mr-2">{{ formatTime(arg.event.start) }}</b>
-            <span class="mr-2">{{ arg.event.title }}</span>
-            <i class="close-button cursor-pointer" @click="arg.event.remove()">X</i>
-          </div>
+        <template v-slot:eventContent='arg'>
+          <b>{{ formatTime(arg.event.start) }}</b>
+          <span @click="editEvent(arg.event)" class="ml-2 cursor-pointer">Edit</span>
+          <span class="close-button relative float-right cursor-pointer mr-2"
+            @click="arg.event.remove()">X</span>
         </template>
       </FullCalendar>
     </div>
@@ -79,8 +93,15 @@ const weekDaysMap = [
   { day: 'Thursday', value: 4 },
   { day: 'Friday', value: 5 },
   { day: 'Saturday', value: 6 }
-];
+]
 const selectedWeekDays = ref([])
+
+const months = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'
+]
+const selectedMonth = ref(new Date().getMonth())
+const selectedYear = ref(new Date().getFullYear())
 
 const calendarOptions = reactive({
   plugins: [
@@ -101,7 +122,7 @@ const calendarOptions = reactive({
   dayMaxEvents: true,
   weekends: true,
   select: (selectInfo) => handleDateSelect(selectInfo),
-  eventClick: (clickInfo) => handleEventClick(clickInfo),
+  // eventClick: (clickInfo) => handleEventClick(clickInfo),
   eventsSet: (events) => handleEvents(events),
   allDaySlot: false,
   slotEventOverlap: false,
@@ -120,9 +141,9 @@ const calendarOptions = reactive({
     }
   }
 })
-
+const selectedEvent = ref(null)
 const handleDateSelect = (selectInfo) => {
-  let title = "";
+  let title = ""
   let calendarApi = selectInfo.view.calendar
 
   calendarApi.unselect()
@@ -136,6 +157,20 @@ const handleDateSelect = (selectInfo) => {
 }
 
 const handleEventClick = (clickInfo) => {
+  const event = clickInfo.event;
+  selectedEvent.value = {
+    id: event.id,
+    title: event.title,
+    description: event.extendedProps.description
+  };
+  showEdit.value = true;
+}
+const editEvent = (event) => {
+  selectedEvent.value = {
+    id: event.id,
+    title: event.title,
+    description: event.extendedProps.description
+  };
   showEdit.value = true;
 }
 
@@ -148,31 +183,31 @@ const formatTime = (date) => {
 }
 
 const formatDate = (date) => {
-  return moment(date).format('LLL');
+  return moment(date).format('LLL')
 }
 
 const closeEdit = () => {
-  showEdit.value = false;
+  showEdit.value = false
 }
 
 const clearEvents = () => {
-  fullCalendar.value.getApi().removeAllEvents();
+  fullCalendar.value.getApi().removeAllEvents()
 }
 
 const bulkEventCreate = () => {
-  const start = startDate.value;
-  const end = endDate.value;
-  const timeValue = time.value;
+  const start = startDate.value
+  const end = endDate.value
+  const timeValue = time.value
   
   if (start && end && timeValue && selectedWeekDays.value.length) {
-    let current = moment(start);
-    const endMoment = moment(end);
+    let current = moment(start)
+    const endMoment = moment(end)
     
     while (current <= endMoment) {
-      const currentDay = current.day();
+      const currentDay = current.day()
       if (selectedWeekDays.value.includes(currentDay)) {
-        const startDateTime = moment(current.format('YYYY-MM-DD') + 'T' + timeValue).format();
-        const endDateTime = moment(startDateTime).add(15, 'minutes').format();
+        const startDateTime = moment(current.format('YYYY-MM-DD') + 'T' + timeValue).format()
+        const endDateTime = moment(startDateTime).add(15, 'minutes').format()
         
         fullCalendar.value.getApi().addEvent({
           id: createEventId(),
@@ -180,18 +215,38 @@ const bulkEventCreate = () => {
           start: startDateTime,
           end: endDateTime,
           allDay: false
-        });
+        })
       }
-      current.add(1, 'day');
+      current.add(1, 'day')
     }
-    startDate.value = '';
-    endDate.value = '';
-    time.value = '';
-    selectedWeekDays.value = [];
+    startDate.value = ''
+    endDate.value = ''
+    time.value = ''
+    selectedWeekDays.value = []
   } else {
-    alert('Please fill out all fields.');
+    alert('Please fill out all fields.')
   }
 }
+
+const goToMonthYear = () => {
+  const calendarApi = fullCalendar.value.getApi()
+  const selectedDate = moment([selectedYear.value, selectedMonth.value])
+  calendarApi.gotoDate(selectedDate.format('YYYY-MM-DD'))
+}
+
+const updateEvent = (updatedEvent) => {
+  const calendarApi = fullCalendar.value.getApi();
+  const existingEvent = calendarApi.getEventById(updatedEvent.id);
+
+  if (existingEvent) {
+    existingEvent.setProp('title', updatedEvent.title);
+    existingEvent.setExtendedProp('description', updatedEvent.description);
+    // calendarApi.updateEvent(existingEvent);
+  }
+  console.log(currentEvents.value)
+  closeEdit();
+}
+
 </script>
 
 <style scoped>
