@@ -1,10 +1,12 @@
 <script setup>
 import FullCalendar from './components/FullCalendar.vue'
+import AppleSignIn from './components/AppleSignIn.vue'
 </script>
 
 <template >
   <div class="body">
     <FullCalendar/>
+    <!-- <AppleSignIn/> -->
   </div>
     
 </template>
