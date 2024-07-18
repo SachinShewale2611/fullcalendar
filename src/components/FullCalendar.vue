@@ -7,7 +7,7 @@
       :selected-event="selectedEvent"
       @update="updateEvent"
     ></EditEvent>
-    
+
     <!-- Sidebar -->
     <div class="demo-app-sidebar w-1/4 p-4 bg-gray-100">
       <div class="demo-app-sidebar-section mb-4">
@@ -102,7 +102,7 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import EditEvent from './EditEvent.vue'
-import { INITIAL_EVENTS, createEventId } from './event-utils'
+import { INITIAL_EVENTS, createEventId } from '../event-utils'
 import moment from 'moment'
 
 // References and Reactive State
