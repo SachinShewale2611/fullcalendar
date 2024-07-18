@@ -9,7 +9,6 @@ This project implements a calendar using FullCalendar in a Vue 3 application. Th
 - **Event Editing**: Edit event details like title and description.
 - **Bulk Event Addition**: Add multiple events over a date range.
 - **Month/Year Navigation**: Jump to specific months and years.
-- **Print Events**: Console log all events in the calendar.
 - **Clear Events**: Remove all events from the calendar.
 
 ## Project Structure

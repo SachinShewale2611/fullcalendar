@@ -8,6 +8,13 @@
       @update="updateEvent"
     ></EditEvent>
 
+    <!-- Add Day Event Modal -->
+    <TimeSelectionModal
+      v-if="showTimeSelectionModal"
+      @close="closeAddDayEvent"
+      @add="addDayEvent"
+    ></TimeSelectionModal>
+
     <!-- Sidebar -->
     <div class="demo-app-sidebar w-1/4 p-4 bg-gray-100">
       <div class="demo-app-sidebar-section mb-4">
@@ -102,6 +109,7 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import EditEvent from './EditEvent.vue'
+import TimeSelectionModal from './TimeSelectionModal.vue'
 import { INITIAL_EVENTS, createEventId } from '../event-utils'
 import moment from 'moment'
 
@@ -173,20 +181,26 @@ const calendarOptions = reactive({
   }
 })
 
+// Event Duration in Minutes to calculate end time
+const eventDurationMinutes = 30;
+
 // Selected Event for Editing
 const selectedEvent = ref(null)
 
+// show/hide Add Day Event Modal
+const showTimeSelectionModal = ref(false)
+const selectedDate = ref(null)
+
 const handleDateSelect = (selectInfo) => {
-  let title = ""
+  //check if it is month view
+  if (selectInfo.view.type === 'dayGridMonth') {
+    selectedDate.value = selectInfo
+    showTimeSelectionModal.value = true
+    return
+  }
   let calendarApi = selectInfo.view.calendar
   calendarApi.unselect()
-  calendarApi.addEvent({
-    id: createEventId(),
-    title,
-    start: selectInfo.startStr,
-    end: moment(selectInfo.startStr).add(30, 'minutes').format(),
-    allDay: selectInfo.allDay
-  })
+  addEvent(selectInfo.startStr);
 }
 
 const handleEventClick = (clickInfo) => {
@@ -239,14 +253,7 @@ const bulkEventCreate = () => {
       const currentDay = current.day()
       if (selectedWeekDays.value.includes(currentDay)) {
         const startDateTime = moment(current.format('YYYY-MM-DD') + 'T' + timeValue).format()
-        const endDateTime = moment(startDateTime).add(30, 'minutes').format()
-        fullCalendar.value.getApi().addEvent({
-          id: createEventId(),
-          title: '',
-          start: startDateTime,
-          end: endDateTime,
-          allDay: false
-        })
+        addEvent(startDateTime);
       }
       current.add(1, 'day')
     }
@@ -282,6 +289,29 @@ const printEvents = () => {
     console.log(`Event ID: ${event.id}, Title: ${event.title}, Start: ${event.start}, End: ${event.end}`);
   })
 }
+
+const closeAddDayEvent = () => {
+  showTimeSelectionModal.value = false
+}
+
+const addDayEvent = (time) => {
+  const startTime = moment(selectedDate.value.startStr).format('YYYY-MM-DD') + 'T' + time
+  let calendarApi = selectedDate.value.view.calendar
+  addEvent(startTime)
+  closeAddDayEvent();
+}
+
+const addEvent = (startTime) => {
+  let calendarApi = fullCalendar.value.getApi()
+  calendarApi.addEvent({
+    id: createEventId(),
+    title: "",
+    start: startTime,
+    end: moment(startTime).add(eventDurationMinutes, 'minutes').format(),
+  })
+  calendarApi.unselect()
+}
+
 </script>
 
 <style scoped>
