@@ -19,11 +19,9 @@
     <div class="demo-app-sidebar w-1/4 p-4 bg-gray-100">
       <div class="demo-app-sidebar-section mb-4">
 
-        <!-- Print Events Button -->
+        
+        <!-- Go to Month/Year Section  -->
         <div class="border-2 rounded-md mt-4 p-2">
-          <button @click="printEvents" class="w-full p-2 bg-blue-500 text-white rounded">Print Events</button>
-
-          <!-- Go to Month/Year Section  -->
           <h2 class="font-bold text-lg mb-2">Go to Month/Year</h2>
           <div class="mb-2">
             <label for="month" class="block mb-1">Month</label>
@@ -80,6 +78,7 @@
             </li>
           </ul>
           <button class="w-full p-2 bg-red-500 text-white rounded" @click="clearEvents">Clear All Events</button>
+          <button @click="printEvents" class="w-full p-2 mt-2 bg-blue-500 text-white rounded">Log Events In Console</button>
         </div>
       </div>
     </div>
@@ -285,9 +284,16 @@ const updateEvent = (updatedEvent) => {
 const printEvents = () => {
   const calendarApi = fullCalendar.value.getApi();
   const events = calendarApi.getEvents();
-  events.forEach(event => {
-    console.log(`Event ID: ${event.id}, Title: ${event.title}, Start: ${event.start}, End: ${event.end}`);
-  })
+  const eventList = events.map(event => {
+    return {
+      id: event.id,
+      title: event.title,
+      start: event.startStr,
+      end: event.endStr,
+      description: event.extendedProps.description
+    }
+  });
+  console.log('eventList', eventList);
 }
 
 const closeAddDayEvent = () => {
