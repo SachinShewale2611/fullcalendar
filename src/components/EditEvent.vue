@@ -19,9 +19,14 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 
-const props = defineProps(['event']);
+const props = defineProps({
+  selectedEvent: {
+    type: Object,
+  },
+});
+
 const editedEvent = ref({
   id: '',
   title: '',
@@ -29,16 +34,6 @@ const editedEvent = ref({
 });
 
 const emit = defineEmits(['update', 'close']);
-console.log(props.event);
-// Watch for changes in the event prop
-watch(() => props.event, (newVal) => {
-  if (newVal) {
-    editedEvent.value.id = newVal.id;
-    editedEvent.value.title = newVal.title;
-    editedEvent.value.description = newVal.description || '';
-  }
-});
-
 // Emit update event with edited event data
 const handleSubmit = () => {
   emit('update', editedEvent.value);
@@ -48,6 +43,9 @@ const handleSubmit = () => {
 const closeEdit = () => {
   emit('close');
 };
+onMounted(() => {
+  editedEvent.value = { ...props.selectedEvent };
+});
 </script>
 
 <style scoped>
