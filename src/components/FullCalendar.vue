@@ -167,6 +167,7 @@ const calendarOptions = reactive({
   eventMaxStack: 1,
   slotDuration: '00:30:00',
   slotLabelInterval: '01:00:00',
+  selectLongPressDelay: 100,
   slotLabelFormat: {
     hour: 'numeric',
     minute: '2-digit',
