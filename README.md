@@ -11,6 +11,10 @@ This project implements a calendar using FullCalendar in a Vue 3 application. Th
 - **Month/Year Navigation**: Jump to specific months and years.
 - **Clear Events**: Remove all events from the calendar.
 
+## Live Demo
+
+Explore the live demo of this project [here](https://fullcalendar-poc.netlify.app/).
+
 ## Project Structure
 
 ```
