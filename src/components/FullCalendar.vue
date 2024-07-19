@@ -1,6 +1,6 @@
 <template>
-  <div class="demo-app flex">
-    <!-- Edit Event Modal start-->
+  <div class="demo-app flex flex-col lg:flex-row h-screen">
+    <!-- Edit Event Modal -->
     <EditEvent
       v-if="showEdit"
       @close="closeEdit"
@@ -16,13 +16,12 @@
     ></TimeSelectionModal>
 
     <!-- Sidebar -->
-    <div class="demo-app-sidebar w-1/4 p-4 bg-gray-100">
+    <div class="demo-app-sidebar w-full lg:w-1/4 p-4 bg-gray-100">
       <div class="demo-app-sidebar-section mb-4">
-
         
-        <!-- Go to Month/Year Section  -->
+        <!-- Go to Month/Year Section -->
         <div class="border-2 rounded-md mt-4 p-2">
-          <h2 class="font-bold text-lg mb-2">Go to Month/Year</h2>
+          <h2 class="font-bold lg:text-lg text-md mb-2">Go to Month/Year</h2>
           <div class="mb-2">
             <label for="month" class="block mb-1">Month</label>
             <select id="month" v-model="selectedMonth" class="w-full p-2 border rounded">
@@ -38,7 +37,7 @@
 
         <!-- Bulk Add Events Section -->
         <div class="border-2 rounded-md mt-4 p-2">
-          <h2 class="font-bold text-lg mb-2">Bulk Add</h2>
+          <h2 class="font-bold lg:text-lg text-md mb-2">Bulk Add</h2>
           <div class="mb-2">
             <label for="start" class="block mb-1">Start Date</label>
             <input type="date" id="start" v-model="startDate" name="start" class="w-full p-2 border rounded">
@@ -48,8 +47,7 @@
             <input type="date" id="end" v-model="endDate" name="end" class="w-full p-2 border rounded">
           </div>
           <div class="mb-2">
-            <label
-            for="time" class="block mb-1">Time</label>
+            <label for="time" class="block mb-1">Time</label>
             <input type="time" id="time" v-model="time" name="time" class="w-full p-2 border rounded">
           </div>
 
@@ -65,8 +63,8 @@
 
         <!-- All Events List -->
         <div class="border-2 rounded-md mt-4 p-2">
-          <h2 class="font-bold text-lg mb-2">All Events ({{ currentEvents.length }})</h2>
-          <ul class="list-disc pl-4 mb-4">
+          <h2 class="font-bold lg:text-lg text-md mb-2">All Events ({{ currentEvents.length }})</h2>
+          <ul class="list-disc pl-4 mb-4 max-h-48 overflow-y-auto">
             <li v-for="event in currentEvents" :key="event.id" class="mb-2">
               <b>{{ formatDate(event.startStr) }}</b>
               <br>
@@ -167,7 +165,7 @@ const calendarOptions = reactive({
   eventMaxStack: 1,
   slotDuration: '00:30:00',
   slotLabelInterval: '01:00:00',
-  selectLongPressDelay: 100,
+  selectLongPressDelay: 500,
   slotLabelFormat: {
     hour: 'numeric',
     minute: '2-digit',
@@ -318,17 +316,29 @@ const addEvent = (startTime) => {
   })
   calendarApi.unselect()
 }
-
 </script>
 
 <style scoped>
 .demo-app {
   display: flex;
+  flex-direction: column;
   height: 100vh;
 }
+@media (min-width: 1024px) {
+  .demo-app {
+    flex-direction: row;
+  }
+}
 .demo-app-sidebar {
-  width: 25%;
+  width: 100%;
   background-color: #f7fafc;
+  padding: 1rem;
+}
+@media (min-width: 1024px) {
+  .demo-app-sidebar {
+    width: 25%;
+    height: 100%;
+  }
 }
 .demo-app-main {
   flex: 1;
@@ -336,5 +346,12 @@ const addEvent = (startTime) => {
 }
 .close-button:hover {
   color: #f86767;
+}
+.demo-app-sidebar-section ul {
+  max-height: 12rem; /* Adjust the height as needed */
+  overflow-y: auto;
+}
+.demo-app-calendar {
+  font-size: smaller; 
 }
 </style>
